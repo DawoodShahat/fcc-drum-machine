@@ -1,0 +1,47 @@
+
+#root {
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(4, 36, 76, 0.7);
+}
+
+.app {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+}
+
+.drum-pad {
+	margin: .4rem;
+	display: flex;	
+	justify-content: center;
+	align-items: center;
+	height: 100px;
+	width: 100px;
+	float: left;
+	border-radius: 50%;
+	background-color: #04244c;
+	font-size: 2em;
+	color: #fff;
+	box-shadow: 4px 4px 10px 0px rgba(0, 0, 0, 0.4);
+
+    &:hover {
+        background-color: #18044c;
+        transform: translateY(4px);
+        cursor: pointer;
+    }
+}
+
+.drum-machine {
+	width: 350px;
+
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
