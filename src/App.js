@@ -79,13 +79,20 @@ const DrumPad = (props) => {
         drumName,
         id,
         soundSrc = '',
-        handleClick,
     } = props;
+
+    let myRef = React.createRef();
+
+    function handleClick(e){
+        myRef.current.currentTime = 0;
+        myRef.current.play();
+    }
 
     return (
         <div className="drum-pad" onClick={handleClick}>
             {drumName}
             <audio
+                ref={myRef}
                 src={soundSrc}
                 id={id}
                 className="clip"
@@ -99,7 +106,6 @@ const DrumPad = (props) => {
 class App extends Component {
     constructor(props){
         super(props);
-        this.handleClick = this.handleClick.bind(this);
         this.handleKeyboardKey = this.handleKeyboardKey.bind(this);
     }
 
@@ -111,10 +117,6 @@ class App extends Component {
         window.removeEventListener('keydown', this.handleKeyboardKey);
     }
 
-    handleClick(e){
-        console.log(e);
-    }
-
     handleKeyboardKey(e){
         console.log(e);
     }
@@ -122,9 +124,7 @@ class App extends Component {
     render(){
         return(
             <div className="app">
-                <DrumMachine
-                    handleClick={this.handleClick}
-                />
+                <DrumMachine />
             </div>
         );
     }
