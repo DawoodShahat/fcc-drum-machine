@@ -28,6 +28,10 @@
     background-color: #18044c;
     transform: translateY(4px);
     cursor: pointer; }
+  .drum-pad.key-pressed {
+    background-color: #18044c;
+    transform: translateY(4px);
+    cursor: pointer; }
 
 .drum-machine {
   width: 350px; }

@@ -51,9 +51,7 @@ let drumPadData = [
 ];
 
 const DrumMachine = (props) => {
-    const {
-        handleClick,
-    } = props;
+
 
     const drumPads = drumPadData.map( item => {
         return (
@@ -62,7 +60,6 @@ const DrumMachine = (props) => {
                 drumName={item.name}
                 id={item.id}
                 soundSrc={item.src}
-                handleClick={handleClick}
             />
         );       
     });
@@ -79,13 +76,17 @@ const DrumPad = (props) => {
         drumName,
         id,
         soundSrc = '',
+        className
     } = props;
 
     let myRef = React.createRef();
 
+
+
     function handleClick(e){
         myRef.current.currentTime = 0;
         myRef.current.play();
+        console.log(myRef.current.id);
     }
 
     return (
@@ -107,18 +108,32 @@ class App extends Component {
     constructor(props){
         super(props);
         this.handleKeyboardKey = this.handleKeyboardKey.bind(this);
+        this.keyUp = this.keyUp.bind(this);
     }
+
 
     componentDidMount(){
         window.addEventListener('keydown', this.handleKeyboardKey);
-    }
+        window.addEventListener('keyup', this.keyUp);
+    } 
 
     componentWillUnmount(){
         window.removeEventListener('keydown', this.handleKeyboardKey);
-    }
+        window.removeEventListener('keyup', this.keyUp);
+    } 
+
 
     handleKeyboardKey(e){
-        console.log(e);
+        let audio = document.getElementById(String.fromCharCode(e.keyCode));
+        if(!audio) return;
+        audio.parentElement.classList.toggle('key-pressed');
+        audio.currentTime = 0;
+        audio.play();
+    }
+
+    keyUp(e){
+        let audio = document.getElementById(String.fromCharCode(e.keyCode));
+        audio.parentElement.classList.toggle('key-pressed');
     }
 
     render(){
