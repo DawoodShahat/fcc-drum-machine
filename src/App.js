@@ -51,7 +51,9 @@ let drumPadData = [
 ];
 
 const DrumMachine = (props) => {
-
+    const {
+        volume
+    } = props;
 
     const drumPads = drumPadData.map( item => {
         return (
@@ -60,6 +62,7 @@ const DrumMachine = (props) => {
                 drumName={item.name}
                 id={item.id}
                 soundSrc={item.src}
+                volume={volume}
             />
         );       
     });
@@ -76,7 +79,7 @@ const DrumPad = (props) => {
         drumName,
         id,
         soundSrc = '',
-        className
+        volume
     } = props;
 
     let myRef = React.createRef();
@@ -84,6 +87,7 @@ const DrumPad = (props) => {
 
 
     function handleClick(e){
+        myRef.current.volume = volume;
         myRef.current.currentTime = 0;
         myRef.current.play();
         console.log(myRef.current.id);
@@ -102,13 +106,51 @@ const DrumPad = (props) => {
     );
 }
 
-//"https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3" 
+const Toggle = (props) => {
+
+    const { handleToggle } = props;
+    return (
+		<div id="toggle" className="toggle" onClick={handleToggle}>
+			<div className="toggle-box"></div>
+		</div>	
+    );
+}
+
+const Display = (props) => {
+
+    const { text } = props;
+    return (
+        <div className="display">
+            {text}
+        </div>
+    );
+}
+
+const VolumeSlider = (props) => {
+    const { handleChange } = props;
+    return (
+        <input
+            onChange={handleChange}
+            className="volume-slider"
+            type="range"
+            min="0"
+            max="100"
+        />
+    );
+}
 
 class App extends Component {
     constructor(props){
         super(props);
+        this.state = {
+            volume: 0.5,
+            displayText: ''
+        }
+
         this.handleKeyboardKey = this.handleKeyboardKey.bind(this);
         this.keyUp = this.keyUp.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleToggle = this.handleToggle.bind(this);
     }
 
 
@@ -125,21 +167,48 @@ class App extends Component {
 
     handleKeyboardKey(e){
         let audio = document.getElementById(String.fromCharCode(e.keyCode));
+
+        console.log(audio);
         if(!audio) return;
-        audio.parentElement.classList.toggle('key-pressed');
+
+        audio.volume = this.state.volume;
         audio.currentTime = 0;
+        audio.parentElement.classList.add('key-pressed');
         audio.play();
     }
 
     keyUp(e){
         let audio = document.getElementById(String.fromCharCode(e.keyCode));
-        audio.parentElement.classList.toggle('key-pressed');
+        if(!audio) return;
+        audio.parentElement.classList.remove('key-pressed');
+    }
+
+    handleChange(e){
+        this.setState({
+            volume: e.target.value / 100,
+            displayText: e.target.value 
+        
+        });
+    }
+
+    handleToggle(e){
+        console.log(e);
     }
 
     render(){
+        const {
+            displayText,
+            volume
+        } = this.state;
+
         return(
             <div className="app">
-                <DrumMachine />
+                <DrumMachine volume={volume} />
+                <div className="controller">
+                    <Toggle handleToggle={this.handleToggle} />
+                    <Display text={displayText} />
+                    <VolumeSlider handleChange={this.handleChange} />
+                </div>
             </div>
         );
     }
