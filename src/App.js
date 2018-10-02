@@ -50,6 +50,18 @@ let drumPadData = [
   }, 
 ];
 
+let soundNames = {
+    'Q' : 'Heater-1',
+    'W' : 'Heater-2',
+    'E' : 'Heater-3',
+    'A' : 'Heater-4',
+    'S' : 'Heater-6',
+    'D' : 'Dsc-Oh',
+    'Z' : 'Kick_n_Hat',
+    'X' : 'RP4_KICK_1',
+    'C' : 'Cev_H2'
+}
+
 const DrumMachine = (props) => {
     const {
         volume,
@@ -176,8 +188,18 @@ class App extends Component {
     handleKeyboardKey(e){
         let audio = document.getElementById(String.fromCharCode(e.keyCode));
 
-        console.log(audio);
         if(!audio) return;
+
+        // if it is powered off then show nothing on display
+        if(!this.state.togglePower){
+            this.setState({
+            displayText: ''
+            });
+        }else {
+            this.setState({
+                displayText: soundNames[audio.id]
+            });
+        }
 
         audio.volume = this.state.volume;
         audio.muted = !this.state.togglePower;
@@ -204,7 +226,6 @@ class App extends Component {
         const { togglePower } = this.state;
         const powerStatus = togglePower ? 'Power Off' : 'Power On';
 
-        const toggleStatus = 
         this.setState({
             togglePower: !togglePower,
             displayText: powerStatus
