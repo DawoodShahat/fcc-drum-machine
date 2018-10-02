@@ -52,7 +52,8 @@ let drumPadData = [
 
 const DrumMachine = (props) => {
     const {
-        volume
+        volume,
+        togglePower
     } = props;
 
     const drumPads = drumPadData.map( item => {
@@ -63,6 +64,7 @@ const DrumMachine = (props) => {
                 id={item.id}
                 soundSrc={item.src}
                 volume={volume}
+                togglePower={togglePower}
             />
         );       
     });
@@ -79,7 +81,8 @@ const DrumPad = (props) => {
         drumName,
         id,
         soundSrc = '',
-        volume
+        volume,
+        togglePower,
     } = props;
 
     let myRef = React.createRef();
@@ -89,6 +92,7 @@ const DrumPad = (props) => {
     function handleClick(e){
         myRef.current.volume = volume;
         myRef.current.currentTime = 0;
+        myRef.current.muted = !togglePower;
         myRef.current.play();
         console.log(myRef.current.id);
     }
@@ -108,10 +112,13 @@ const DrumPad = (props) => {
 
 const Toggle = (props) => {
 
-    const { handleToggle } = props;
+    const {
+        handleToggle,
+        className
+    } = props;
     return (
 		<div id="toggle" className="toggle" onClick={handleToggle}>
-			<div className="toggle-box"></div>
+			<div className={className}></div>
 		</div>	
     );
 }
@@ -144,7 +151,8 @@ class App extends Component {
         super(props);
         this.state = {
             volume: 0.5,
-            displayText: ''
+            displayText: '',
+            togglePower: true
         }
 
         this.handleKeyboardKey = this.handleKeyboardKey.bind(this);
@@ -172,6 +180,7 @@ class App extends Component {
         if(!audio) return;
 
         audio.volume = this.state.volume;
+        audio.muted = !this.state.togglePower;
         audio.currentTime = 0;
         audio.parentElement.classList.add('key-pressed');
         audio.play();
@@ -192,20 +201,34 @@ class App extends Component {
     }
 
     handleToggle(e){
-        console.log(e);
+        const { togglePower } = this.state;
+        const powerStatus = togglePower ? 'Power Off' : 'Power On';
+
+        const toggleStatus = 
+        this.setState({
+            togglePower: !togglePower,
+            displayText: powerStatus
+        });
     }
 
     render(){
         const {
             displayText,
-            volume
+            volume,
+            togglePower
         } = this.state;
 
         return(
             <div className="app">
-                <DrumMachine volume={volume} />
+                <DrumMachine
+                    volume={volume}
+                    togglePower={togglePower}
+                />
                 <div className="controller">
-                    <Toggle handleToggle={this.handleToggle} />
+                    <Toggle
+                        handleToggle={this.handleToggle}
+                        className={`toggle-box ${ togglePower ? 'changed' : '' }`}
+                    />
                     <Display text={displayText} />
                     <VolumeSlider handleChange={this.handleChange} />
                 </div>
