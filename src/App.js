@@ -64,8 +64,7 @@ let soundNames = {
 
 const DrumMachine = (props) => {
     const {
-        volume,
-        togglePower
+        handleClick
     } = props;
 
     const drumPads = drumPadData.map( item => {
@@ -75,8 +74,7 @@ const DrumMachine = (props) => {
                 drumName={item.name}
                 id={item.id}
                 soundSrc={item.src}
-                volume={volume}
-                togglePower={togglePower}
+                handleClick={handleClick}
             />
         );       
     });
@@ -93,27 +91,13 @@ const DrumPad = (props) => {
         drumName,
         id,
         soundSrc = '',
-        volume,
-        togglePower,
+        handleClick
     } = props;
-
-    let myRef = React.createRef();
-
-
-
-    function handleClick(e){
-        myRef.current.volume = volume;
-        myRef.current.currentTime = 0;
-        myRef.current.muted = !togglePower;
-        myRef.current.play();
-        console.log(myRef.current.id);
-    }
 
     return (
         <div className="drum-pad" onClick={handleClick}>
             {drumName}
             <audio
-                ref={myRef}
                 src={soundSrc}
                 id={id}
                 className="clip"
@@ -171,6 +155,8 @@ class App extends Component {
         this.keyUp = this.keyUp.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleToggle = this.handleToggle.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.setDisplayText = this.setDisplayText.bind(this);
     }
 
 
@@ -190,21 +176,38 @@ class App extends Component {
 
         if(!audio) return;
 
-        // if it is powered off then show nothing on display
-        if(!this.state.togglePower){
-            this.setState({
-            displayText: ''
-            });
-        }else {
-            this.setState({
-                displayText: soundNames[audio.id]
-            });
-        }
+        this.setDisplayText(audio.id);
 
         audio.volume = this.state.volume;
         audio.muted = !this.state.togglePower;
         audio.currentTime = 0;
         audio.parentElement.classList.add('key-pressed');
+        audio.play();
+    }
+
+    setDisplayText(id){
+        // if it is powered off then, show nothing on display
+        if(!this.state.togglePower){
+            this.setState({
+                displayText: ''
+            });
+        }else {
+            this.setState({
+                displayText: soundNames[id]
+            });
+        }
+    }
+
+    handleClick(e){
+        let audio = document.getElementById(e.target.textContent);
+
+        if(!audio) return;
+
+        this.setDisplayText(audio.id);
+
+        audio.volume = this.state.volume;
+        audio.muted = !this.state.togglePower;
+        audio.currentTime = 0;
         audio.play();
     }
 
@@ -235,15 +238,13 @@ class App extends Component {
     render(){
         const {
             displayText,
-            volume,
             togglePower
         } = this.state;
 
         return(
             <div className="app">
                 <DrumMachine
-                    volume={volume}
-                    togglePower={togglePower}
+                    handleClick={this.handleClick}
                 />
                 <div className="controller">
                     <Toggle
