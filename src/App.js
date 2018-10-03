@@ -157,6 +157,7 @@ class App extends Component {
         this.handleToggle = this.handleToggle.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this.setDisplayText = this.setDisplayText.bind(this);
+        this.setAudioControls = this.setAudioControls.bind(this);
     }
 
 
@@ -177,11 +178,14 @@ class App extends Component {
         if(!audio) return;
 
         this.setDisplayText(audio.id);
+        this.setAudioControls(audio);
+        audio.parentElement.classList.add('key-pressed');
+    }
 
+    setAudioControls(audio){
         audio.volume = this.state.volume;
         audio.muted = !this.state.togglePower;
         audio.currentTime = 0;
-        audio.parentElement.classList.add('key-pressed');
         audio.play();
     }
 
@@ -204,11 +208,7 @@ class App extends Component {
         if(!audio) return;
 
         this.setDisplayText(audio.id);
-
-        audio.volume = this.state.volume;
-        audio.muted = !this.state.togglePower;
-        audio.currentTime = 0;
-        audio.play();
+        this.setAudioControls(audio);
     }
 
     keyUp(e){
